@@ -21,6 +21,9 @@ public class GenerateNoise : MonoBehaviour
     private float[,] heights;
     private Image rend;
 
+    private static int[] RedMainTowerId = new int[2] { 11, 11 };
+    private static int[] BlueMainTowerId = new int[2] { 0, 0 };
+
     [SerializeField] private GameObject buttonGet;
 
     void Start()
@@ -94,7 +97,16 @@ public class GenerateNoise : MonoBehaviour
     {
         var data = new BoardData();
         int board_length = pixHeight * pixWidth;
+
+        if (BlueMainTowerId[0] > pixHeight || BlueMainTowerId[0] < 0 || BlueMainTowerId[1] > pixWidth || BlueMainTowerId[1] < 0 || RedMainTowerId[0] > pixHeight || RedMainTowerId[0] < 0 || RedMainTowerId[1] > pixWidth || RedMainTowerId[1] < 0)
+        {
+            Debug.LogError("IndexOutOfRangeException");
+            return;
+        }
+
+        // tiles save
         data.tiles_to_save = new tile_to_save[board_length];
+
 
         for (int i = 0; i < pixWidth; i++)
         {
@@ -113,11 +125,32 @@ public class GenerateNoise : MonoBehaviour
                 {
                     data.tiles_to_save[j + i * pixWidth].type = TileType.River;
                 }
-                
-                data.tiles_to_save[j + i * pixWidth].command = Commands.Empty;
+
+                if (j == BlueMainTowerId[0] && i == BlueMainTowerId[1]) { data.tiles_to_save[j + i * pixWidth].command = Commands.Blue; }
+                else if (j == RedMainTowerId[0] && i == RedMainTowerId[1]) { data.tiles_to_save[j + i * pixWidth].command = Commands.Red; }
+                else { data.tiles_to_save[j + i * pixWidth].command = Commands.Empty; }
             }
         }
 
+        // buildings save
+        data.buildings_to_save = new building_to_save[2];
+
+        data.buildings_to_save[0] = new building_to_save();
+        data.buildings_to_save[1] = new building_to_save();
+
+        data.buildings_to_save[0].id = BlueMainTowerId;
+        data.buildings_to_save[1].id = RedMainTowerId;
+
+        data.buildings_to_save[0].command = Commands.Blue;
+        data.buildings_to_save[1].command = Commands.Red;
+
+        data.buildings_to_save[0].type = BuildingsType.MainBuilding;
+        data.buildings_to_save[1].type = BuildingsType.MainBuilding;
+
+        data.buildings_to_save[0].healths = 0;
+        data.buildings_to_save[0].healths = 0;
+
+        // other save
         data.BoardTopology = new int[2] { pixWidth, pixHeight };
 
         data.gold_red = 100;
@@ -140,6 +173,11 @@ public class GenerateNoise : MonoBehaviour
         this.seed = seed;
     }
 
+    public static void SetCoordsOfTowers(int[] red, int[] blue)
+    {
+        RedMainTowerId = red;
+        BlueMainTowerId = blue;
+    } 
 
     private Color Paint(float value)
     {
