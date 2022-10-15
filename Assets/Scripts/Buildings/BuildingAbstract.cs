@@ -81,7 +81,7 @@ public class BuildingAbstract : MonoBehaviour
 
     public void DestroyThis()
     {
-        for (int i = cam.GetComponent<CameraController>().buildings.Count - 1; 0 < i; i--)
+        for (int i = cam.GetComponent<CameraController>().buildings.Count - 1; 0 <= i; i--)
         {
             if (cam.GetComponent<CameraController>().buildings[i].GetComponent<BuildingStruct>().index == GetComponent<BuildingStruct>().index)
             {
